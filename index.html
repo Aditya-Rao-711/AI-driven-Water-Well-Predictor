@@ -1,136 +1,111 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>WellSight — AI Water Well Predictor</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI-Driven Water Well Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        header {
+            background-color: #0066cc;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        .results {
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 20px;
+            border-radius: 10px;
+        }
+        .loading {
+            color: orange;
+            font-style: italic;
+        }
+        button {
+            background-color: #0066cc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #004d99;
+        }
+    </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <div class="brand">
-        <div class="logo">💧</div>
-        <div>
-          <h1 class="brand-title">WellSight</h1>
-          <div class="brand-sub">AI site checks for drilling — India</div>
-        </div>
-      </div>
-      <nav class="nav">
-        <a href="#how">How it works</a>
-        <a href="#proof">Proof</a>
-        <a href="#faq">FAQ</a>
-      </nav>
+    <header>
+        <h1>AI-Driven Water Well Predictor</h1>
+        <p>Click a location on the map to analyze groundwater suitability</p>
+    </header>
+
+    <div id="map"></div>
+
+    <div class="results" id="results">
+        <p>Select a location to see the analysis.</p>
     </div>
-  </header>
 
-  <main>
-    <section class="hero container">
-      <div class="hero-left">
-        <h2 class="hero-head">Pick the right spot. Avoid dry holes. Build wells that actually deliver.</h2>
-        <p class="hero-sub">Enter a location and get a clear site verdict, estimated depth, yield and water-quality note — backed by national aquifer maps.</p>
-        <form id="siteForm" class="site-form" onsubmit="return false;">
-          <label for="location" class="sr-only">Location (village / address / GPS)</label>
-          <input id="location" name="location" placeholder="Enter location (e.g., Jaipur, Rajasthan or 12.9716, 77.5946)" required />
-          <div class="form-row">
-            <button id="analyzeBtn" class="cta" type="submit">Search</button>
-            <button id="sampleBtn" class="ghost" type="button">Try sample site</button>
-          </div>
-          <div id="smallNote" class="small-note">48-hour style report (demo). Powered by NAQUIM + AI when integrated.</div>
-        </form>
-        <div id="resultCard" class="result hidden" aria-live="polite"></div>
-      </div>
-      <div class="hero-right">
-        <div class="device-mock">
-          <img src="assets/map-mock.svg" alt="Map mock" />
-        </div>
-      </div>
-    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([20.5937, 78.9629], 5); // India center
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-    <section id="how" class="section container">
-      <h2>How it works</h2>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <p>Enter your site location — village name, address, or GPS coordinates.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <p>Our AI cross-checks with NAQUIM aquifer maps and hydro-geological data.</p>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <p>You get a verdict on drilling potential, estimated depth, yield, and quality.</p>
-        </div>
-      </div>
-    </section>
+        let marker;
 
-    <section id="proof" class="section container">
-      <h2>Proof</h2>
-      <p>We’ve validated our model against actual borewell success data from multiple states in India. Accuracy rates are improving with every update.</p>
-      <img src="assets/proof-chart.svg" alt="Proof chart" class="proof-img" />
-    </section>
+        map.on('click', async function(e) {
+            const lat = e.latlng.lat;
+            const lon = e.latlng.lng;
 
-    <section id="faq" class="section container">
-      <h2>FAQ</h2>
-      <div class="faq-item">
-        <h3>Where does your data come from?</h3>
-        <p>We use India’s NAQUIM aquifer mapping program, state groundwater reports, and satellite imagery layers.</p>
-      </div>
-      <div class="faq-item">
-        <h3>Can I trust the prediction?</h3>
-        <p>It’s an advisory tool — drilling outcomes depend on multiple on-site factors. Always consult a qualified hydro-geologist.</p>
-      </div>
-      <div class="faq-item">
-        <h3>Do you cover all of India?</h3>
-        <p>Yes — coverage includes all NAQUIM-mapped regions. Some areas may have lower data resolution.</p>
-      </div>
-    </section>
-  </main>
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker([lat, lon]).addTo(map);
 
-  <footer class="footer container">
-    <div>© <span id="year"></span> WellSight — Powered by NAQUIM + AI (integration required)</div>
-  </footer>
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = `<p class="loading">Analyzing location (${lat.toFixed(4)}, ${lon.toFixed(4)})...</p>`;
 
-  <script src="app.js"></script>
-  <script>
-const form = document.getElementById('siteForm');
-const resultCard = document.getElementById('resultCard');
+            try {
+                const response = await fetch('http://localhost:4000/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ latitude: lat, longitude: lon })
+                });
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const location = document.getElementById('location').value.trim();
-  if (!location) return;
-
-  document.getElementById('analyzeBtn').innerText = 'Analyzing...';
-  document.getElementById('analyzeBtn').disabled = true;
-
-  try {
-    const res = await fetch('http://localhost:5000/api/analyze-location', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ location })
-    });
-    const data = await res.json();
-
-    resultCard.classList.remove('hidden');
-    resultCard.innerHTML = `
-      <div><strong>Verdict:</strong> ${data.verdict}</div>
-      <div><strong>Depth:</strong> ${data.estimatedDepth} m</div>
-      <div><strong>Yield:</strong> ${data.estimatedYield} L/min</div>
-      <div><strong>Drilling Technique:</strong> ${data.recommendedTechnique}</div>
-      <div><strong>Water Quality:</strong> ${data.qualityNote}</div>
-    `;
-  } catch (err) {
-    console.error(err);
-    alert('Error fetching analysis.');
-  } finally {
-    document.getElementById('analyzeBtn').innerText = 'Search';
-    document.getElementById('analyzeBtn').disabled = false;
-  }
-});
-</script>
+                const data = await response.json();
+                resultsDiv.innerHTML = `
+                    <h2>Analysis Results</h2>
+                    <p><strong>Suitability:</strong> ${data.suitability || 'N/A'}</p>
+                    <p><strong>Estimated Aquifer Depth:</strong> ${data.aquiferDepth || 'N/A'} meters</p>
+                    <p><strong>Estimated Yield:</strong> ${data.yield || 'N/A'} L/min</p>
+                    <p><strong>Water Quality Forecast:</strong> ${data.waterQuality || 'N/A'}</p>
+                `;
+            } catch (error) {
+                console.error(error);
+                resultsDiv.innerHTML = `<p style="color:red;">Error retrieving data. Please check server.</p>`;
+            }
+        });
+    </script>
 </body>
 </html>
