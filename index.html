@@ -1,124 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI-Driven Water Well Predictor</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Driven Water Well Predictor</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    header {
+      background: linear-gradient(90deg, #2c7be5, #1e5cb3);
+      color: white;
+      padding: 15px 25px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    #controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    #searchBox {
+      width: 300px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-right: 10px;
+      font-size: 1rem;
+    }
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    #searchButton {
+      background: #2c7be5;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #searchButton:hover {
+      background: #1e5cb3;
+    }
 
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f9fafb;
-        }
-        #map {
-            height: 500px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .leaflet-popup-content {
-            font-size: 14px;
-            font-weight: 500;
-        }
-    </style>
+    #map {
+      flex: 1;
+    }
+
+    #infoCard {
+      position: absolute;
+      top: 100px;
+      right: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      width: 250px;
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #infoCard h3 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #2c7be5;
+    }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-    <!-- Header -->
-    <header class="bg-blue-600 text-white py-4 shadow-md">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold">💧 AI-Driven Water Well Predictor</h1>
-            <nav>
-                <a href="#" class="hover:underline px-3">Home</a>
-                <a href="#" class="hover:underline px-3">About</a>
-                <a href="#" class="hover:underline px-3">Contact</a>
-            </nav>
-        </div>
-    </header>
+  <header>AI-Driven Water Well Predictor</header>
 
-    <!-- Main -->
-    <main class="container mx-auto px-4 py-8 flex flex-col gap-6">
+  <div id="controls">
+    <input type="text" id="searchBox" placeholder="Search location...">
+    <button id="searchButton">Search</button>
+  </div>
 
-        <!-- Search Section -->
-        <section class="bg-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-semibold mb-4">🔍 Search for a Location</h2>
-            <input id="searchBox" 
-                   type="text" 
-                   placeholder="Enter a location to find water well predictions..." 
-                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none">
-            <button id="searchBtn" 
-                    class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition">
-                Search
-            </button>
-        </section>
+  <div id="map"></div>
 
-        <!-- Map Section -->
-        <section>
-            <h2 class="text-xl font-semibold mb-4">🗺 Interactive Water Well Map</h2>
-            <div id="map"></div>
-        </section>
+  <div id="infoCard">
+    <h3 id="infoTitle">Well Info</h3>
+    <p id="infoDetails">Click a marker to see details.</p>
+  </div>
 
-        <!-- Results -->
-        <section id="results" class="bg-white p-6 rounded-xl shadow-lg hidden">
-            <h2 class="text-xl font-semibold mb-4">💡 Prediction Results</h2>
-            <p id="resultText" class="text-gray-700"></p>
-        </section>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    </main>
+  <script>
+    const map = L.map('map').setView([20.5937, 78.9629], 5); // India default
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300 py-4 text-center">
-        &copy; 2025 AI-Driven Water Well Predictor | Built with ❤️ using Leaflet.js
-    </footer>
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+    }).addTo(map);
 
-    <!-- Script -->
-    <script>
-        // Initialize map
-        const map = L.map('map').setView([20.5937, 78.9629], 5);
+    // Example markers
+    const markers = [
+      { lat: 28.6139, lng: 77.2090, title: "Delhi Well", details: "Depth: 50m | Quality: Good" },
+      { lat: 19.0760, lng: 72.8777, title: "Mumbai Well", details: "Depth: 40m | Quality: Average" }
+    ];
 
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Handle map click
-        map.on('click', function(e) {
-            const { lat, lng } = e.latlng;
-            L.marker([lat, lng]).addTo(map)
-                .bindPopup(`<b>Coordinates:</b> ${lat.toFixed(4)}, ${lng.toFixed(4)}`)
-                .openPopup();
-
-            // Example: fetch from backend
-            fetch(`http://localhost:4000/predict?lat=${lat}&lng=${lng}`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('results').classList.remove('hidden');
-                    document.getElementById('resultText').innerText = 
-                        `Predicted groundwater potential: ${data.prediction}`;
-                })
-                .catch(() => {
-                    document.getElementById('results').classList.remove('hidden');
-                    document.getElementById('resultText').innerText = 
-                        "Could not fetch prediction data.";
-                });
+    markers.forEach(marker => {
+      L.marker([marker.lat, marker.lng]).addTo(map)
+        .on('click', () => {
+          document.getElementById('infoTitle').textContent = marker.title;
+          document.getElementById('infoDetails').textContent = marker.details;
+          document.getElementById('infoCard').style.display = 'block';
         });
+    });
 
-        // Search button click
-        document.getElementById('searchBtn').addEventListener('click', () => {
-            alert("Search functionality can be implemented with geocoding API.");
-        });
-    </script>
+    // Search button (dummy function for now)
+    document.getElementById('searchButton').addEventListener('click', () => {
+      alert("Search functionality will connect to NAQUIM dataset.");
+    });
+  </script>
+
 </body>
 </html>
