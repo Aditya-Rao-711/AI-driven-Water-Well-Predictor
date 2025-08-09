@@ -1,174 +1,142 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>WellSight — AI Water Well Predictor</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groundwater Analysis Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            padding: 20px;
+            text-align: center;
+            background-color: rgba(0,0,0,0.4);
+        }
+        header h1 {
+            font-size: 2.2em;
+            margin: 0;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .search-box {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        .search-box h2 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        .search-box p {
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            background: #00c6ff;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #0072ff;
+        }
+        .results {
+            margin-top: 20px;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            text-align: left;
+        }
+        footer {
+            padding: 15px;
+            text-align: center;
+            background-color: rgba(0,0,0,0.3);
+            font-size: 0.8em;
+            color: #aaa;
+        }
+    </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <div class="brand">
-        <div class="logo">💧</div>
-        <div>
-          <h1 class="brand-title">WellSight</h1>
-          <div class="brand-sub">AI site checks for drilling — India</div>
-        </div>
-      </div>
-      <nav class="nav">
-        <a href="#how">How it works</a>
-        <a href="#proof">Proof</a>
-        <a href="#faq">FAQ</a>
-      </nav>
-    </div>
-  </header>
 
-  <main>
-    <!-- HERO -->
-    <section class="hero container">
-      <div class="hero-left">
-        <h2 class="hero-head">Pick the right spot. Avoid dry holes. Build wells that actually deliver.</h2>
-        <p class="hero-sub">Enter a location and get a clear site verdict, estimated depth, yield and water-quality note — backed by national aquifer maps.</p>
+<header>
+    <h1>Groundwater Analysis Portal</h1>
+    <p>Check suitability for drilling and groundwater availability</p>
+</header>
 
-        <form id="siteForm" class="site-form" onsubmit="return false;">
-          <label for="location" class="sr-only">Location (village / address / GPS)</label>
-          <input id="location" name="location" placeholder="Enter village, address or GPS (e.g. 'Shirur, Pune' or '19.123,73.456')" required />
-          <div class="form-row">
-            <button id="analyzeBtn" class="cta" type="submit">Search</button>
-            <button id="sampleBtn" class="ghost" type="button">Try sample site</button>
-          </div>
-          <div id="smallNote" class="small-note">48-hour style report (demo). Powered by NAQUIM + AI when integrated.</div>
+<main>
+    <div class="search-box">
+        <h2>Search Location for Groundwater Analysis</h2>
+        <p>Enter your location below to check aquifer depth, yield, and water quality forecast.</p>
+        <form id="locationForm">
+            <input type="text" id="locationInput" placeholder="Enter location..." required>
+            <button type="submit">Analyze</button>
         </form>
-
-        <div id="resultCard" class="result hidden" aria-live="polite">
-          <!-- JS fills this -->
+        <div class="results" id="resultsBox">
+            <h3>Analysis Results:</h3>
+            <p id="resultText"></p>
         </div>
-      </div>
+    </div>
+</main>
 
-      <div class="hero-right">
-        <div class="device-mock">
-          <img src="assets/map-mock.svg" alt="Map mock" />
-        </div>
-      </div>
-    </section>
+<footer>
+    &copy; 2025 Groundwater Analysis System | Developed for Research and Sustainable Water Use
+</footer>
 
-    <!-- PROBLEM -->
-    <section id="how" class="section container">
-      <h3 class="section-head">You’re tired of drilling blind</h3>
-      <p>“Borewell not hitting water” or “failed borewell” are common. Each bad well means wasted money and weeks of delay. You need simple answers: Where should I drill? How deep? Will it yield enough water?</p>
-      <div class="cards-grid">
-        <div class="card">
-          <h4>Stop guessing where to drill</h4>
-          <p>We test the exact site you pick and give a clear go / caution / no-go recommendation.</p>
-        </div>
-        <div class="card">
-          <h4>Plan budgets without surprises</h4>
-          <p>Get estimated aquifer depth and yield so pump and tank decisions are accurate.</p>
-        </div>
-        <div class="card">
-          <h4>Know water quality in advance</h4>
-          <p>Forecast salinity and likely contaminants so you plan treatment beforehand.</p>
-        </div>
-      </div>
-    </section>
+<script>
+    document.getElementById("locationForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const location = document.getElementById("locationInput").value;
 
-    <!-- SOLUTION -->
-    <section class="section solution container">
-      <h3 class="section-head">How WellSight helps your team</h3>
-      <div class="solution-grid">
-        <div class="solution-left">
-          <p>We combine national aquifer maps (NAQUIM) and regional geology with an AI model to produce a short site report. No jargon — just clear numbers: depth, yield, recommended drilling technique, and water quality note.</p>
-          <ul>
-            <li>Site-level verdict (go / caution / no-go)</li>
-            <li>Estimated aquifer depth (meters)</li>
-            <li>Expected yield (liters/hour or m³/day)</li>
-            <li>Quick note on likely salinity / treatment needs</li>
-          </ul>
-        </div>
-        <div class="solution-right">
-          <img class="owner-photo" src="assets/team-photo.jpg" alt="Team member pointing to aquifer map" />
-          <div class="owner-caption">Founder: geohydrology lead — available for municipal consultations</div>
-        </div>
-      </div>
-    </section>
+        fetch(`http://localhost:5000/analyze?location=${encodeURIComponent(location)}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("resultsBox").style.display = "block";
+                document.getElementById("resultText").innerHTML = `
+                    <strong>Location:</strong> ${location}<br>
+                    <strong>Suitability:</strong> ${data.suitability}<br>
+                    <strong>Aquifer Depth:</strong> ${data.depth} meters<br>
+                    <strong>Expected Yield:</strong> ${data.yield} L/min<br>
+                    <strong>Water Quality:</strong> ${data.quality}
+                `;
+            })
+            .catch(err => {
+                document.getElementById("resultsBox").style.display = "block";
+                document.getElementById("resultText").innerHTML = "Error fetching data. Please try again.";
+                console.error(err);
+            });
+    });
+</script>
 
-    <!-- 3 BENEFITS -->
-    <section class="section container">
-      <h3 class="section-head">What you get — plain and useful</h3>
-
-      <div class="benefit-grid">
-        <div class="benefit">
-          <h4>Reduce failed borewells</h4>
-          <p>We flag risky sites and recommend better locations — backed by NAQUIM data and AI checks.</p>
-        </div>
-
-        <div class="benefit">
-          <h4>Predict yield before you drill</h4>
-          <p>Use our yield estimate to size pumps and storage — plan procurement and budgets accurately.</p>
-        </div>
-
-        <div class="benefit">
-          <h4>Cut treatment surprises</h4>
-          <p>We forecast water quality so you can decide treatment or alternate sourcing up front.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- SOCIAL PROOF -->
-    <section id="proof" class="section container">
-      <h3 class="section-head">Trusted by municipal teams and rural developers</h3>
-      <div class="logos">
-        <!-- placeholder logos -->
-        <div class="logo-plate">District Water Dept</div>
-        <div class="logo-plate">Rural Dev NGO</div>
-        <div class="logo-plate">Engineering Firm</div>
-      </div>
-
-      <div class="testimonials">
-        <blockquote>“Saved us from a failed borewell — clear recommendation.” — District Water Planner</blockquote>
-        <blockquote>“Estimate of depth and yield helped us plan pumps and cost.” — Rural Development Officer</blockquote>
-      </div>
-    </section>
-
-    <!-- CTA BLOCK -->
-    <section class="cta-block container">
-      <div class="cta-left">
-        <h3>Ready to check a site right now?</h3>
-        <p>Enter a location and get a clear, usable site verdict. Make decisions with confidence — not guesses.</p>
-      </div>
-      <div class="cta-right">
-        <input id="ctaLocation" placeholder="Enter village / GPS" />
-        <button id="ctaBtn" class="cta small">[[CALL-TO-ACTION]]</button>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq" class="section container">
-      <h3 class="section-head">FAQ</h3>
-      <div class="faq-grid">
-        <div class="faq">
-          <strong>Q: How fast will I get results?</strong>
-          <p>A: This demo returns instant analysis. In production we aim to deliver a short report within 48 hours.</p>
-        </div>
-        <div class="faq">
-          <strong>Q: Do you guarantee water?</strong>
-          <p>A: No guarantee — we provide a go / caution / no-go verdict plus estimates to reduce risk of failed borewells.</p>
-        </div>
-        <div class="faq">
-          <strong>Q: How is my location data stored?</strong>
-          <p>A: Submitted locations are saved on the backend. See server/submissions.json. Replace with your DB of choice in production.</p>
-        </div>
-      </div>
-    </section>
-
-    <footer class="footer container">
-      <div>© <span id="year"></span> WellSight — Powered by NAQUIM + AI (integration required)</div>
-    </footer>
-  </main>
-
-  <script src="app.js"></script>
 </body>
 </html>
