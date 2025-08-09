@@ -3,109 +3,97 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI-Driven Water Well Predictor</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <title>WellSight</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f8f9fa;
-            color: #333;
-        }
-        header {
-            background-color: #0066cc;
-            padding: 20px;
-            color: white;
-            text-align: center;
-        }
-        h1 {
-            margin: 0;
-            font-size: 28px;
+            background-color: #f9fafb;
         }
         #map {
-            height: 400px;
-            width: 100%;
-        }
-        .results {
-            padding: 20px;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin: 20px;
-            border-radius: 10px;
-        }
-        .loading {
-            color: orange;
-            font-style: italic;
-        }
-        button {
-            background-color: #0066cc;
-            color: white;
-            padding: 10px 20px;
-            border: none;
+            height: 300px;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #004d99;
         }
     </style>
 </head>
-<body>
-    <header>
-        <h1>AI-Driven Water Well Predictor</h1>
-        <p>Click a location on the map to analyze groundwater suitability</p>
+<body class="font-sans text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 text-center text-2xl font-bold shadow">
+        WellSight – Aquifer & Well Data
     </header>
 
-    <div id="map"></div>
+    <!-- Main container -->
+    <main class="max-w-5xl mx-auto p-6 space-y-6">
+        
+        <!-- Map section -->
+        <section class="bg-white p-4 rounded shadow">
+            <h2 class="text-xl font-semibold mb-2">Select a Location</h2>
+            <div id="map"></div>
+            <p id="coords" class="mt-2 text-sm text-gray-500">Click anywhere on the map to select coordinates.</p>
+        </section>
 
-    <div class="results" id="results">
-        <p>Select a location to see the analysis.</p>
-    </div>
+        <!-- Results section -->
+        <section class="bg-white p-4 rounded shadow">
+            <h2 class="text-xl font-semibold mb-2">NAQUIM Data</h2>
+            <div id="dataOutput" class="text-gray-700">
+                No location selected yet.
+            </div>
+        </section>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    </main>
+
+    <!-- Leaflet JS logic -->
     <script>
-        const map = L.map('map').setView([20.5937, 78.9629], 5); // India center
+        // Initialize map
+        const map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India
+
+        // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
         let marker;
 
+        // Handle map click
         map.on('click', async function(e) {
             const lat = e.latlng.lat;
             const lon = e.latlng.lng;
 
+            // Update marker
             if (marker) {
                 map.removeLayer(marker);
             }
             marker = L.marker([lat, lon]).addTo(map);
 
-            const resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = `<p class="loading">Analyzing location (${lat.toFixed(4)}, ${lon.toFixed(4)})...</p>`;
+            // Update coordinates display
+            document.getElementById('coords').innerText = 
+                `Selected: ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
 
+            // Fetch NAQUIM data from backend
             try {
-                const response = await fetch('http://localhost:4000/analyze', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ latitude: lat, longitude: lon })
-                });
-
-                const data = await response.json();
-                resultsDiv.innerHTML = `
-                    <h2>Analysis Results</h2>
-                    <p><strong>Suitability:</strong> ${data.suitability || 'N/A'}</p>
-                    <p><strong>Estimated Aquifer Depth:</strong> ${data.aquiferDepth || 'N/A'} meters</p>
-                    <p><strong>Estimated Yield:</strong> ${data.yield || 'N/A'} L/min</p>
-                    <p><strong>Water Quality Forecast:</strong> ${data.waterQuality || 'N/A'}</p>
+                const res = await fetch(`http://localhost:4000/naquim?lat=${lat}&lon=${lon}`);
+                if (!res.ok) throw new Error("API request failed");
+                
+                const data = await res.json();
+                document.getElementById('dataOutput').innerHTML = `
+                    <strong>State:</strong> ${data.state || 'N/A'}<br>
+                    <strong>District:</strong> ${data.district || 'N/A'}<br>
+                    <strong>Water Level:</strong> ${data.water_level || 'N/A'}<br>
+                    <strong>Aquifer Type:</strong> ${data.aquifer_type || 'N/A'}
                 `;
-            } catch (error) {
-                console.error(error);
-                resultsDiv.innerHTML = `<p style="color:red;">Error retrieving data. Please check server.</p>`;
+            } catch (err) {
+                document.getElementById('dataOutput').innerHTML = 
+                    `<span class="text-red-500">Error fetching data: ${err.message}</span>`;
             }
         });
     </script>
+
 </body>
 </html>
