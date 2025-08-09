@@ -95,5 +95,42 @@
   </footer>
 
   <script src="app.js"></script>
+  <script>
+const form = document.getElementById('siteForm');
+const resultCard = document.getElementById('resultCard');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const location = document.getElementById('location').value.trim();
+  if (!location) return;
+
+  document.getElementById('analyzeBtn').innerText = 'Analyzing...';
+  document.getElementById('analyzeBtn').disabled = true;
+
+  try {
+    const res = await fetch('http://localhost:5000/api/analyze-location', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ location })
+    });
+    const data = await res.json();
+
+    resultCard.classList.remove('hidden');
+    resultCard.innerHTML = `
+      <div><strong>Verdict:</strong> ${data.verdict}</div>
+      <div><strong>Depth:</strong> ${data.estimatedDepth} m</div>
+      <div><strong>Yield:</strong> ${data.estimatedYield} L/min</div>
+      <div><strong>Drilling Technique:</strong> ${data.recommendedTechnique}</div>
+      <div><strong>Water Quality:</strong> ${data.qualityNote}</div>
+    `;
+  } catch (err) {
+    console.error(err);
+    alert('Error fetching analysis.');
+  } finally {
+    document.getElementById('analyzeBtn').innerText = 'Search';
+    document.getElementById('analyzeBtn').disabled = false;
+  }
+});
+</script>
 </body>
 </html>
