@@ -3,97 +3,122 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WellSight</title>
-    
+    <title>AI-Driven Water Well Predictor</title>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Leaflet CSS & JS -->
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
         body {
+            font-family: 'Poppins', sans-serif;
             background-color: #f9fafb;
         }
         #map {
-            height: 300px;
-            border-radius: 8px;
+            height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .leaflet-popup-content {
+            font-size: 14px;
+            font-weight: 500;
         }
     </style>
 </head>
-<body class="font-sans text-gray-800">
+<body class="min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="bg-blue-600 text-white p-4 text-center text-2xl font-bold shadow">
-        WellSight – Aquifer & Well Data
+    <header class="bg-blue-600 text-white py-4 shadow-md">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">💧 AI-Driven Water Well Predictor</h1>
+            <nav>
+                <a href="#" class="hover:underline px-3">Home</a>
+                <a href="#" class="hover:underline px-3">About</a>
+                <a href="#" class="hover:underline px-3">Contact</a>
+            </nav>
+        </div>
     </header>
 
-    <!-- Main container -->
-    <main class="max-w-5xl mx-auto p-6 space-y-6">
-        
-        <!-- Map section -->
-        <section class="bg-white p-4 rounded shadow">
-            <h2 class="text-xl font-semibold mb-2">Select a Location</h2>
-            <div id="map"></div>
-            <p id="coords" class="mt-2 text-sm text-gray-500">Click anywhere on the map to select coordinates.</p>
+    <!-- Main -->
+    <main class="container mx-auto px-4 py-8 flex flex-col gap-6">
+
+        <!-- Search Section -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">🔍 Search for a Location</h2>
+            <input id="searchBox" 
+                   type="text" 
+                   placeholder="Enter a location to find water well predictions..." 
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none">
+            <button id="searchBtn" 
+                    class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition">
+                Search
+            </button>
         </section>
 
-        <!-- Results section -->
-        <section class="bg-white p-4 rounded shadow">
-            <h2 class="text-xl font-semibold mb-2">NAQUIM Data</h2>
-            <div id="dataOutput" class="text-gray-700">
-                No location selected yet.
-            </div>
+        <!-- Map Section -->
+        <section>
+            <h2 class="text-xl font-semibold mb-4">🗺 Interactive Water Well Map</h2>
+            <div id="map"></div>
+        </section>
+
+        <!-- Results -->
+        <section id="results" class="bg-white p-6 rounded-xl shadow-lg hidden">
+            <h2 class="text-xl font-semibold mb-4">💡 Prediction Results</h2>
+            <p id="resultText" class="text-gray-700"></p>
         </section>
 
     </main>
 
-    <!-- Leaflet JS logic -->
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-4 text-center">
+        &copy; 2025 AI-Driven Water Well Predictor | Built with ❤️ using Leaflet.js
+    </footer>
+
+    <!-- Script -->
     <script>
         // Initialize map
-        const map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India
+        const map = L.map('map').setView([20.5937, 78.9629], 5);
 
         // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        let marker;
-
         // Handle map click
-        map.on('click', async function(e) {
-            const lat = e.latlng.lat;
-            const lon = e.latlng.lng;
+        map.on('click', function(e) {
+            const { lat, lng } = e.latlng;
+            L.marker([lat, lng]).addTo(map)
+                .bindPopup(`<b>Coordinates:</b> ${lat.toFixed(4)}, ${lng.toFixed(4)}`)
+                .openPopup();
 
-            // Update marker
-            if (marker) {
-                map.removeLayer(marker);
-            }
-            marker = L.marker([lat, lon]).addTo(map);
+            // Example: fetch from backend
+            fetch(`http://localhost:4000/predict?lat=${lat}&lng=${lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('results').classList.remove('hidden');
+                    document.getElementById('resultText').innerText = 
+                        `Predicted groundwater potential: ${data.prediction}`;
+                })
+                .catch(() => {
+                    document.getElementById('results').classList.remove('hidden');
+                    document.getElementById('resultText').innerText = 
+                        "Could not fetch prediction data.";
+                });
+        });
 
-            // Update coordinates display
-            document.getElementById('coords').innerText = 
-                `Selected: ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-
-            // Fetch NAQUIM data from backend
-            try {
-                const res = await fetch(`http://localhost:4000/naquim?lat=${lat}&lon=${lon}`);
-                if (!res.ok) throw new Error("API request failed");
-                
-                const data = await res.json();
-                document.getElementById('dataOutput').innerHTML = `
-                    <strong>State:</strong> ${data.state || 'N/A'}<br>
-                    <strong>District:</strong> ${data.district || 'N/A'}<br>
-                    <strong>Water Level:</strong> ${data.water_level || 'N/A'}<br>
-                    <strong>Aquifer Type:</strong> ${data.aquifer_type || 'N/A'}
-                `;
-            } catch (err) {
-                document.getElementById('dataOutput').innerHTML = 
-                    `<span class="text-red-500">Error fetching data: ${err.message}</span>`;
-            }
+        // Search button click
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            alert("Search functionality can be implemented with geocoding API.");
         });
     </script>
-
 </body>
 </html>
