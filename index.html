@@ -1,43 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Enabled Groundwater Prediction</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WellSight — AI Water Well Predictor</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>AI-Enabled Groundwater Prediction</h1>
-        <p>Analyze site suitability, aquifer depth, yield, drilling techniques, and water quality forecast</p>
-    </header>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo">💧</div>
+        <div>
+          <h1 class="brand-title">WellSight</h1>
+          <div class="brand-sub">AI site checks for drilling — India</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#how">How it works</a>
+        <a href="#proof">Proof</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+    </div>
+  </header>
 
-    <main>
-        <section class="search-section">
-            <h2>Find Groundwater Information</h2>
-            <form id="locationForm">
-                <input 
-                    type="text" 
-                    id="locationInput" 
-                    placeholder="Enter location (e.g., Jaipur, Rajasthan or 12.9716, 77.5946)" 
-                    required
-                >
-                <button type="submit">Search</button>
-            </form>
-        </section>
+  <main>
+    <!-- HERO -->
+    <section class="hero container">
+      <div class="hero-left">
+        <h2 class="hero-head">Pick the right spot. Avoid dry holes. Build wells that actually deliver.</h2>
+        <p class="hero-sub">Enter a location and get a clear site verdict, estimated depth, yield and water-quality note — backed by national aquifer maps.</p>
 
-        <section id="results" class="results-section">
-            <h2>Results</h2>
-            <div id="resultsContent">
-                <p>Enter a location to get predictions.</p>
-            </div>
-        </section>
-    </main>
+        <form id="siteForm" class="site-form" onsubmit="return false;">
+          <label for="location" class="sr-only">Location (village / address / GPS)</label>
+          <input id="location" name="location"
+            placeholder="Enter location (e.g., Jaipur, Rajasthan or 12.9716, 77.5946)"
+            required />
+          <div class="form-row">
+            <button id="analyzeBtn" class="cta" type="submit">Search</button>
+            <button id="sampleBtn" class="ghost" type="button">Try sample site</button>
+          </div>
+          <div id="smallNote" class="small-note">48-hour style report (demo). Powered by NAQUIM + AI when integrated.</div>
+        </form>
 
-    <footer>
-        <p>© 2025 AI Groundwater Prediction | Data Source: NAQUIM</p>
-    </footer>
+        <div id="resultCard" class="result hidden" aria-live="polite">
+          <!-- JS fills this -->
+        </div>
+      </div>
 
-    <script src="script.js"></script>
+      <div class="hero-right">
+        <div class="device-mock">
+          <img src="assets/map-mock.svg" alt="Map mock" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ... rest of your existing content ... -->
+  </main>
+
+  <footer class="footer container">
+    <div>© <span id="year"></span> WellSight — Powered by NAQUIM + AI (integration required)</div>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
