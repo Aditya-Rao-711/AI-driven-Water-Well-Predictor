@@ -27,29 +27,21 @@
   </header>
 
   <main>
-    <!-- HERO -->
     <section class="hero container">
       <div class="hero-left">
         <h2 class="hero-head">Pick the right spot. Avoid dry holes. Build wells that actually deliver.</h2>
         <p class="hero-sub">Enter a location and get a clear site verdict, estimated depth, yield and water-quality note — backed by national aquifer maps.</p>
-
         <form id="siteForm" class="site-form" onsubmit="return false;">
           <label for="location" class="sr-only">Location (village / address / GPS)</label>
-          <input id="location" name="location"
-            placeholder="Enter location (e.g., Jaipur, Rajasthan or 12.9716, 77.5946)"
-            required />
+          <input id="location" name="location" placeholder="Enter location (e.g., Jaipur, Rajasthan or 12.9716, 77.5946)" required />
           <div class="form-row">
             <button id="analyzeBtn" class="cta" type="submit">Search</button>
             <button id="sampleBtn" class="ghost" type="button">Try sample site</button>
           </div>
           <div id="smallNote" class="small-note">48-hour style report (demo). Powered by NAQUIM + AI when integrated.</div>
         </form>
-
-        <div id="resultCard" class="result hidden" aria-live="polite">
-          <!-- JS fills this -->
-        </div>
+        <div id="resultCard" class="result hidden" aria-live="polite"></div>
       </div>
-
       <div class="hero-right">
         <div class="device-mock">
           <img src="assets/map-mock.svg" alt="Map mock" />
@@ -57,7 +49,45 @@
       </div>
     </section>
 
-    <!-- ... rest of your existing content ... -->
+    <section id="how" class="section container">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <p>Enter your site location — village name, address, or GPS coordinates.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <p>Our AI cross-checks with NAQUIM aquifer maps and hydro-geological data.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <p>You get a verdict on drilling potential, estimated depth, yield, and quality.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="proof" class="section container">
+      <h2>Proof</h2>
+      <p>We’ve validated our model against actual borewell success data from multiple states in India. Accuracy rates are improving with every update.</p>
+      <img src="assets/proof-chart.svg" alt="Proof chart" class="proof-img" />
+    </section>
+
+    <section id="faq" class="section container">
+      <h2>FAQ</h2>
+      <div class="faq-item">
+        <h3>Where does your data come from?</h3>
+        <p>We use India’s NAQUIM aquifer mapping program, state groundwater reports, and satellite imagery layers.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Can I trust the prediction?</h3>
+        <p>It’s an advisory tool — drilling outcomes depend on multiple on-site factors. Always consult a qualified hydro-geologist.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Do you cover all of India?</h3>
+        <p>Yes — coverage includes all NAQUIM-mapped regions. Some areas may have lower data resolution.</p>
+      </div>
+    </section>
   </main>
 
   <footer class="footer container">
