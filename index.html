@@ -3,87 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Groundwater Site Suitability Predictor</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>AI-Enabled Groundwater Prediction</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <div class="container">
-            <h1>AI-Enabled Groundwater Suitability & Drilling Predictor</h1>
-            <p>Empowering sustainable water resource planning across India</p>
-        </div>
+        <h1>AI-Enabled Groundwater Prediction</h1>
+        <p>Analyze site suitability, aquifer depth, yield, drilling techniques, and water quality forecast</p>
     </header>
 
-    <section id="intro" class="container">
-        <h2>About the Platform</h2>
-        <p>
-            This tool helps municipal water authorities, rural developers, and engineers assess the suitability of a site for well drilling.
-            Using AI and NAQUIM datasets, our system predicts aquifer depth, potential water yield, recommended drilling techniques, and water quality forecasts — tailored to your chosen location.
-        </p>
-    </section>
+    <main>
+        <section class="search-section">
+            <h2>Find Groundwater Information</h2>
+            <form id="locationForm">
+                <input 
+                    type="text" 
+                    id="locationInput" 
+                    placeholder="Enter location (e.g., Jaipur, Rajasthan or 12.9716, 77.5946)" 
+                    required
+                >
+                <button type="submit">Search</button>
+            </form>
+        </section>
 
-    <section id="search-tool" class="container">
-        <h2>Check Your Site's Groundwater Potential</h2>
-        <form id="locationForm">
-            <label for="location">Enter location (City, District, or GPS coordinates):</label>
-            <input type="text" id="location" name="location" placeholder="e.g., Jaipur, Rajasthan" required>
-            <button type="submit">Analyze Location</button>
-        </form>
-        <div id="results" style="margin-top: 20px;"></div>
-    </section>
-
-    <section id="features" class="container">
-        <h2>What You’ll Get</h2>
-        <ul>
-            <li>✔ AI-powered suitability analysis for drilling</li>
-            <li>✔ Estimated aquifer depth and potential water yield</li>
-            <li>✔ Recommended drilling methods and equipment</li>
-            <li>✔ Water quality forecast based on historical data</li>
-            <li>✔ Data sourced from NAQUIM and other authoritative sources</li>
-        </ul>
-    </section>
-
-    <section id="how-it-works" class="container">
-        <h2>How It Works</h2>
-        <ol>
-            <li>Enter your location in the search bar above.</li>
-            <li>Our AI model retrieves geological and hydrological data.</li>
-            <li>We analyze site-specific drilling feasibility.</li>
-            <li>Receive your results instantly.</li>
-        </ol>
-    </section>
+        <section id="results" class="results-section">
+            <h2>Results</h2>
+            <div id="resultsContent">
+                <p>Enter a location to get predictions.</p>
+            </div>
+        </section>
+    </main>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2025 AI Groundwater Predictor | Data from NAQUIM & other sources</p>
-        </div>
+        <p>© 2025 AI Groundwater Prediction | Data Source: NAQUIM</p>
     </footer>
 
-    <script>
-        document.getElementById('locationForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const location = document.getElementById('location').value;
-            document.getElementById('results').innerHTML = "<p>Analyzing " + location + "...</p>";
-
-            try {
-                const response = await fetch('http://localhost:5000/api/analyze', { // Replace with live backend URL when deployed
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ location })
-                });
-                const data = await response.json();
-                document.getElementById('results').innerHTML = `
-                    <h3>Results for ${location}</h3>
-                    <p><strong>Suitability:</strong> ${data.suitability}</p>
-                    <p><strong>Aquifer Depth:</strong> ${data.aquiferDepth} meters</p>
-                    <p><strong>Estimated Yield:</strong> ${data.yield} liters/hour</p>
-                    <p><strong>Recommended Drilling Technique:</strong> ${data.drillingTechnique}</p>
-                    <p><strong>Water Quality:</strong> ${data.waterQuality}</p>
-                `;
-            } catch (error) {
-                document.getElementById('results').innerHTML = "<p style='color:red;'>Error retrieving data. Please try again later.</p>";
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
