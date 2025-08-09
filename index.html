@@ -1,141 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI-Driven Water Well Predictor</title>
-  
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Roboto', sans-serif;
-      background-color: #f4f6f8;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Driven Water Well Predictor</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
 
-    header {
-      background: linear-gradient(90deg, #2c7be5, #1e5cb3);
-      color: white;
-      padding: 15px 25px;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
+        header {
+            padding: 15px 25px;
+            background: #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
 
-    #controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-      background-color: white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            color: #38bdf8;
+        }
 
-    #searchBox {
-      width: 300px;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-right: 10px;
-      font-size: 1rem;
-    }
+        .search-container {
+            display: flex;
+            gap: 10px;
+        }
 
-    #searchButton {
-      background: #2c7be5;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    #searchButton:hover {
-      background: #1e5cb3;
-    }
+        .search-container input {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            width: 220px;
+            font-size: 14px;
+        }
 
-    #map {
-      flex: 1;
-    }
+        .search-container button {
+            padding: 8px 14px;
+            border-radius: 5px;
+            border: none;
+            background: #38bdf8;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
 
-    #infoCard {
-      position: absolute;
-      top: 100px;
-      right: 20px;
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      width: 250px;
-      display: none;
-      animation: fadeIn 0.3s ease-in-out;
-    }
+        .search-container button:hover {
+            background: #0ea5e9;
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        #map {
+            flex: 1;
+        }
 
-    #infoCard h3 {
-      margin-top: 0;
-      font-size: 1.2rem;
-      color: #2c7be5;
-    }
-  </style>
+        .info-card {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .info-card h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #38bdf8;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(-10px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+    </style>
 </head>
 <body>
 
-  <header>AI-Driven Water Well Predictor</header>
+<header>
+    <h1>AI-Driven Water Well Predictor</h1>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search location..." />
+        <button onclick="searchLocation()">Search</button>
+    </div>
+</header>
 
-  <div id="controls">
-    <input type="text" id="searchBox" placeholder="Search location...">
-    <button id="searchButton">Search</button>
-  </div>
+<div id="map"></div>
 
-  <div id="map"></div>
+<div class="info-card" id="infoCard" style="display:none;">
+    <h2>Location Info</h2>
+    <p id="infoText">Click on a point on the map to see well prediction data.</p>
+</div>
 
-  <div id="infoCard">
-    <h3 id="infoTitle">Well Info</h3>
-    <p id="infoDetails">Click a marker to see details.</p>
-  </div>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <script>
-    const map = L.map('map').setView([20.5937, 78.9629], 5); // India default
+<script>
+    const map = L.map('map').setView([20.5937, 78.9629], 5);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Example markers
-    const markers = [
-      { lat: 28.6139, lng: 77.2090, title: "Delhi Well", details: "Depth: 50m | Quality: Good" },
-      { lat: 19.0760, lng: 72.8777, title: "Mumbai Well", details: "Depth: 40m | Quality: Average" }
-    ];
+    map.on('click', function(e) {
+        const lat = e.latlng.lat.toFixed(5);
+        const lng = e.latlng.lng.toFixed(5);
+        document.getElementById('infoCard').style.display = 'block';
+        document.getElementById('infoText').innerHTML = `
+            <strong>Latitude:</strong> ${lat} <br>
+            <strong>Longitude:</strong> ${lng} <br>
+            Fetching well prediction data...
+        `;
 
-    markers.forEach(marker => {
-      L.marker([marker.lat, marker.lng]).addTo(map)
-        .on('click', () => {
-          document.getElementById('infoTitle').textContent = marker.title;
-          document.getElementById('infoDetails').textContent = marker.details;
-          document.getElementById('infoCard').style.display = 'block';
-        });
+        fetch(`http://localhost:4000/api/predict?lat=${lat}&lng=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('infoText').innerHTML += `<br><br><strong>Prediction:</strong> ${data.prediction}`;
+            })
+            .catch(err => {
+                document.getElementById('infoText').innerHTML += `<br><br><strong>Error:</strong> Unable to fetch data.`;
+            });
     });
 
-    // Search button (dummy function for now)
-    document.getElementById('searchButton').addEventListener('click', () => {
-      alert("Search functionality will connect to NAQUIM dataset.");
-    });
-  </script>
+    function searchLocation() {
+        const location = document.getElementById('searchInput').value;
+        if(location.trim() === "") return;
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${location}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    map.setView([lat, lon], 10);
+                } else {
+                    alert("Location not found");
+                }
+            });
+    }
+</script>
 
 </body>
 </html>
