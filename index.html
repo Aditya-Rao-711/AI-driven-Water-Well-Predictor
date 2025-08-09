@@ -3,140 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Groundwater Analysis Portal</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        header {
-            padding: 20px;
-            text-align: center;
-            background-color: rgba(0,0,0,0.4);
-        }
-        header h1 {
-            font-size: 2.2em;
-            margin: 0;
-        }
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-        }
-        .search-box {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 12px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-        .search-box h2 {
-            margin-bottom: 10px;
-            font-size: 1.5em;
-        }
-        .search-box p {
-            margin-bottom: 20px;
-            font-size: 0.9em;
-            color: #ccc;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            margin-bottom: 10px;
-            font-size: 1em;
-        }
-        button {
-            padding: 12px 20px;
-            font-size: 1em;
-            border: none;
-            border-radius: 8px;
-            background: #00c6ff;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background: #0072ff;
-        }
-        .results {
-            margin-top: 20px;
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 10px;
-            display: none;
-            text-align: left;
-        }
-        footer {
-            padding: 15px;
-            text-align: center;
-            background-color: rgba(0,0,0,0.3);
-            font-size: 0.8em;
-            color: #aaa;
-        }
-    </style>
+    <title>AI Groundwater Site Suitability Predictor</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<header>
-    <h1>Groundwater Analysis Portal</h1>
-    <p>Check suitability for drilling and groundwater availability</p>
-</header>
-
-<main>
-    <div class="search-box">
-        <h2>Search Location for Groundwater Analysis</h2>
-        <p>Enter your location below to check aquifer depth, yield, and water quality forecast.</p>
-        <form id="locationForm">
-            <input type="text" id="locationInput" placeholder="Enter location..." required>
-            <button type="submit">Analyze</button>
-        </form>
-        <div class="results" id="resultsBox">
-            <h3>Analysis Results:</h3>
-            <p id="resultText"></p>
+    <header>
+        <div class="container">
+            <h1>AI-Enabled Groundwater Suitability & Drilling Predictor</h1>
+            <p>Empowering sustainable water resource planning across India</p>
         </div>
-    </div>
-</main>
+    </header>
 
-<footer>
-    &copy; 2025 Groundwater Analysis System | Developed for Research and Sustainable Water Use
-</footer>
+    <section id="intro" class="container">
+        <h2>About the Platform</h2>
+        <p>
+            This tool helps municipal water authorities, rural developers, and engineers assess the suitability of a site for well drilling.
+            Using AI and NAQUIM datasets, our system predicts aquifer depth, potential water yield, recommended drilling techniques, and water quality forecasts — tailored to your chosen location.
+        </p>
+    </section>
 
-<script>
-    document.getElementById("locationForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-        const location = document.getElementById("locationInput").value;
+    <section id="search-tool" class="container">
+        <h2>Check Your Site's Groundwater Potential</h2>
+        <form id="locationForm">
+            <label for="location">Enter location (City, District, or GPS coordinates):</label>
+            <input type="text" id="location" name="location" placeholder="e.g., Jaipur, Rajasthan" required>
+            <button type="submit">Analyze Location</button>
+        </form>
+        <div id="results" style="margin-top: 20px;"></div>
+    </section>
 
-        fetch(`http://localhost:5000/analyze?location=${encodeURIComponent(location)}`)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("resultsBox").style.display = "block";
-                document.getElementById("resultText").innerHTML = `
-                    <strong>Location:</strong> ${location}<br>
-                    <strong>Suitability:</strong> ${data.suitability}<br>
-                    <strong>Aquifer Depth:</strong> ${data.depth} meters<br>
-                    <strong>Expected Yield:</strong> ${data.yield} L/min<br>
-                    <strong>Water Quality:</strong> ${data.quality}
+    <section id="features" class="container">
+        <h2>What You’ll Get</h2>
+        <ul>
+            <li>✔ AI-powered suitability analysis for drilling</li>
+            <li>✔ Estimated aquifer depth and potential water yield</li>
+            <li>✔ Recommended drilling methods and equipment</li>
+            <li>✔ Water quality forecast based on historical data</li>
+            <li>✔ Data sourced from NAQUIM and other authoritative sources</li>
+        </ul>
+    </section>
+
+    <section id="how-it-works" class="container">
+        <h2>How It Works</h2>
+        <ol>
+            <li>Enter your location in the search bar above.</li>
+            <li>Our AI model retrieves geological and hydrological data.</li>
+            <li>We analyze site-specific drilling feasibility.</li>
+            <li>Receive your results instantly.</li>
+        </ol>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 AI Groundwater Predictor | Data from NAQUIM & other sources</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('locationForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const location = document.getElementById('location').value;
+            document.getElementById('results').innerHTML = "<p>Analyzing " + location + "...</p>";
+
+            try {
+                const response = await fetch('http://localhost:5000/api/analyze', { // Replace with live backend URL when deployed
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ location })
+                });
+                const data = await response.json();
+                document.getElementById('results').innerHTML = `
+                    <h3>Results for ${location}</h3>
+                    <p><strong>Suitability:</strong> ${data.suitability}</p>
+                    <p><strong>Aquifer Depth:</strong> ${data.aquiferDepth} meters</p>
+                    <p><strong>Estimated Yield:</strong> ${data.yield} liters/hour</p>
+                    <p><strong>Recommended Drilling Technique:</strong> ${data.drillingTechnique}</p>
+                    <p><strong>Water Quality:</strong> ${data.waterQuality}</p>
                 `;
-            })
-            .catch(err => {
-                document.getElementById("resultsBox").style.display = "block";
-                document.getElementById("resultText").innerHTML = "Error fetching data. Please try again.";
-                console.error(err);
-            });
-    });
-</script>
-
+            } catch (error) {
+                document.getElementById('results').innerHTML = "<p style='color:red;'>Error retrieving data. Please try again later.</p>";
+            }
+        });
+    </script>
 </body>
 </html>
