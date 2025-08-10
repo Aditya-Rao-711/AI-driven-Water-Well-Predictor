@@ -135,3 +135,20 @@ function localPlaceholderAnalyze(location) {
 }
 
 function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+
+/* --------- NEW: GeoGuessr-style map resize --------- */
+// Make sure this runs AFTER the map is created in your HTML or another JS file
+document.addEventListener('DOMContentLoaded', () => {
+  const mapContainer = document.getElementById('map');
+  if (mapContainer) {
+    mapContainer.addEventListener('click', function () {
+      mapContainer.classList.toggle('enlarged');
+      // ensure Leaflet map variable exists before calling invalidateSize
+      if (typeof map !== 'undefined') {
+        setTimeout(function () {
+          map.invalidateSize();
+        }, 650);
+      }
+    });
+  }
+});
